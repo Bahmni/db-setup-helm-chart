@@ -38,7 +38,7 @@ jobs:
           persist-credentials: false
 
       - name: Copy Helm Archive
-        run: cp db-setup-${{ env.ARTIFACT_VERSION }}.tgz helm-charts/db-setup
+        run: cp db-setup-${{ env.ARTIFACT_VERSION }}.tgz helm-charts/db-setup/
 
       - name: Helm Index
         working-directory: helm-charts/
