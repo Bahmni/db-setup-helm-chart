@@ -1,0 +1,4 @@
+Database Setup Completed. The following databases are created.
+{{- range $appName, $values := .Values.databases }}
+- {{$values.DB_NAME}}
+{{- end }}

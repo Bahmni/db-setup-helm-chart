@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-setup
+spec:
+  template:
+    spec:
+      containers:
+        - name: db-setup
+          image: mysql:5.7
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - echo starting;
+              set -e;
+              {{- range $appName, $values := .Values.databases }}
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS ${{ printf "%s_%s" $appName "DB_NAME"}};";
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${{ printf "%s_%s" $appName "DB_USERNAME"}}' IDENTIFIED BY '${{ printf "%s_%s" $appName "DB_PASSWORD"}}';";
+              mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${{ printf "%s_%s" $appName "DB_PASSWORD"}}. * TO '${{ printf "%s_%s" $appName "DB_USERNAME"}}';";
+              {{- end }}
+              echo done;
+          envFrom:
+            - secretRef:
+                name: db-credentials
+                optional: false
+      restartPolicy: Never
