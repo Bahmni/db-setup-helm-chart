@@ -1,7 +1,7 @@
 name: Build and Publish
 on:
   push:
-    branches: [ BAH-1809 ]
+    branches: [ main ]
 
 jobs:
   build-publish:
