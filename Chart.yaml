@@ -1,0 +1,5 @@
+apiVersion: v2
+name: db-setup
+description: Utility helm chart for creating databases for different applications of Bahmni
+type: application
+version: 1.0.0
