@@ -2,6 +2,8 @@ name: Build and Publish
 on:
   push:
     branches: [ main ]
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   build-publish:
@@ -10,7 +12,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Check if tagged release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          CHART_VERSION=$(yq .version Chart.yaml)
+          echo "ARTIFACT_VERSION=$(echo $CHART_VERSION)" >> $GITHUB_ENV
       - name: Verify app version
+        if: startsWith(github.ref, 'refs/tags/') != true
         run: |
           CHART_VERSION=$(yq .version Chart.yaml)
           if [ $(git tag -l "$CHART_VERSION") ]; then 
@@ -28,7 +36,7 @@ jobs:
 
       - name: Helm Package
         run: helm package .
-      
+
       - name: Checkout Charts Repository
         uses: actions/checkout@v2
         with:
